@@ -34,14 +34,6 @@ class Command(BaseCommand):
                 email=email,
                 password=password
             )
-            self.stdout.write(self.style.SUCCESS(f'Superuser {username} created successfully.'))
-            self.stdout.write(self.style.SUCCESS(f'Email: {email}'))
-            logger.info(f'Superuser {username} created successfully with email {email}.')
-            self.stdout.write('=======================')
-            self.stdout.write(f'Username: {username}')
-            self.stdout.write(f'Email: {email}')
-            self.stdout.write(f'Password: {password}')
-            self.stdout.write('=======================')
         except Exception as e:
             logger.error(f'Error creating superuser: {str(e)}')
             raise CommandError(f'Failed to create superuser: {str(e)}')

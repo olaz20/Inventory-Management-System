@@ -4,6 +4,30 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'inventory.log',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
+
+
+
+
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
