@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 import logging
 from apps.suppliers.v1.serializers import SupplierSerializer
 from apps.suppliers.models import Supplier
+from common.permission import IsSuperuser
 
 
 logging = logging.getLogger(__name__)
@@ -11,7 +12,7 @@ logging = logging.getLogger(__name__)
 class SupplierListCreateApiView(generics.ListCreateAPIView):
     queryset = Supplier.objects.all()
     serializer_class = SupplierSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSuperuser]
 
     def perform_create(self, serializer):
         try: 
@@ -24,7 +25,7 @@ class SupplierListCreateApiView(generics.ListCreateAPIView):
 class SupplierRetriveUpdateDeleteApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Supplier.objects.all()
     serializer_class = SupplierSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsSuperuser]
 
     def perform_update(self, serializer):
         try:
