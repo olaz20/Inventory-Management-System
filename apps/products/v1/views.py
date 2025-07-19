@@ -1,14 +1,16 @@
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import logging
-from apps.products.v1.serializers import ProductSerializer, InventoryLevelSerializer
+from apps.products.v1.serializers import ProductSerializer, InventoryLevelSerializer, ProductCSVSerializer
+from django.db import transaction
+import pandas as pd
 from django_filters.rest_framework import DjangoFilterBackend
 from apps.products.models import Product, Inventorylevel
 from common.permission import IsSuperuser
 from common.response import api_response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.pagination import PageNumberPagination
-
+from rest_framework.views import APIView
 
 logging = logging.getLogger(__name__)
 
@@ -133,3 +135,73 @@ class InventoryLevelListCreateApiView(generics.ListCreateAPIView):
                 status_code=status.HTTP_400_BAD_REQUEST
             )
 
+class CSVUploadView(APIView):
+    permission_classes = [IsAuthenticated, IsSuperuser]
+    def post(self, request, *args, **kwargs):
+        try:
+            file = request.FILES.get('file')
+            if not file:
+                logging.warning("CSV upload attempted without file")
+                return api_response(message="No file provided", 
+                        data={"file": "CSV file is required"},status_code=status.HTTP_400_BAD_REQUEST)
+            
+            if not file.name.endswith('.csv'):
+                logging.warning("CSV upload attempted with non-CSV file")
+                return api_response(message="Invalid file type", 
+                        data={"file": "Only CSV files are allowed"}, status_code=status.HTTP_400_BAD_REQUEST)
+            required_columns = ['name', 'description', 'price', 'quantity', 'supplier_id']
+            try:
+                df = pd.read_csv(file)
+            except Exception as e:
+                logging.error(f"Error reading CSV file: {e}")
+                return api_response(message="Error reading CSV file", 
+                        data={"file": "Invalid CSV format"}, status_code=status.HTTP_400_BAD_REQUEST)
+            
+            if not all(col in df.columns for col in required_columns):
+                missing_cols = [col for col in required_columns if col not in df.columns]
+                logging.warning(f"Missing columns in CSV: {missing_cols}")
+                return api_response(
+                    message="Invalid CSV format",
+                    errors={"file": f"Missing columns: {', '.join(missing_cols)}"},
+                    status_code=status.HTTP_400_BAD_REQUEST
+                )
+            results = {
+                'total_records': len(df),
+                'successful': 0,
+                'failed': 0,
+                'errors': []
+            }
+            with transaction.atomic():
+                for index, row in df.iterrows():
+                    serializer = ProductCSVSerializer(data=row.to_dict())
+                    if serializer.is_valid():
+                        serializer.save()
+                        results['successful'] += 1
+                        logging.info(f"Imported product: {row['name']} from CSV")
+                    else:
+                        results['failed'] += 1
+                        results['errors'].append({
+                            'row': index + 2,  # CSV row numbers start at 1, +1 for header
+                            'errors': serializer.errors
+                        })
+                        logging.warning(f"Failed to import row {index + 2}: {serializer.errors}")
+                message = "CSV processing completed"
+            if results['failed'] > 0:
+                message = "CSV processing completed with errors"
+                status_code = status.HTTP_207_MULTI_STATUS
+            else:
+                status_code = status.HTTP_201_CREATED
+
+            logging.info(f"CSV upload processed: {results['successful']} successful, {results['failed']} failed")
+            return api_response(
+                message=message,
+                data=results,
+                status_code=status_code
+            )
+        except Exception as e:
+            logging.error(f"Unexpected error during CSV upload: {str(e)}")
+            return api_response(
+                message="Failed to process CSV",
+                data={"detail": str(e)},
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

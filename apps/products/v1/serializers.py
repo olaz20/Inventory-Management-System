@@ -54,3 +54,30 @@ class InventoryLevelSerializer(serializers.ModelSerializer):
         product.save()
         return super().update(self.instance, validated_data)
 
+class ProductCSVSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=255)
+    description = serializers.CharField(allow_blank=True, required=False)
+    price = serializers.DecimalField(max_digits=10, decimal_places=2)
+    quantity = serializers.IntegerField(min_value=0)
+    supplier_name = serializers.CharField(max_length=200)
+
+    def validate(self, attrs):
+        supplier_name = attrs.get('supplier_name')
+        if not Supplier.objects.filter(name=supplier_name).exists():
+            raise serializers.ValidationError({"supplier_name": "Supplier does not exist."})
+        
+        if Product.objects.filter(name=attrs.get('name')).exists():
+            raise serializers.ValidationError({"name": "Product with this name already exists."})
+        return attrs
+    def create(self, validated_data):
+        supplier = Supplier.objects.get(name=validated_data['supplier_name'])
+        product = Product.objects.create(
+            name=validated_data['name'],
+            description=validated_data.get('description', ''),
+            price=validated_data['price'],
+            quantity=validated_data['quantity'],
+            supplier=supplier
+        )
+        return product
+    
+        
