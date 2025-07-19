@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 import os
 import logging
 from django.core.management import CommandError
-
+from decouple import config
 
 
 logger = logging.getLogger(__name__)
@@ -17,9 +17,9 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.WARNING('Superuser already exists. Skipping creation.'))
                 logger.info('Superuser creation skipped: superuser already exists.')
                 return
-            username = os.getenv('SUPERUSER_USERNAME', 'admin')
-            email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
-            password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
+            username = config('SUPERUSER_USERNAME', 'admin')
+            email = config('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
+            password = config('DJANGO_SUPERUSER_PASSWORD')
 
             if not password:
                 raise CommandError('DJANGO_SUPERUSER_PASSWORD must be set.')
