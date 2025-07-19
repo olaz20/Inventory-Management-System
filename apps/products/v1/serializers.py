@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from ..models import Product
-from suppliers.models import Supplier
+from apps.suppliers.models import Supplier
 
 class ProductSerializer(serializers.ModelSerializer):
     supplier_id = serializers.PrimaryKeyRelatedField(
