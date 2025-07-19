@@ -2,15 +2,24 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import logging
 from apps.products.v1.serializers import ProductSerializer
+from django_filters.rest_framework import DjangoFilterBackend
 from apps.products.models import Product
 from common.permission import IsSuperuser
 from common.response import api_response
+from rest_framework.filters import SearchFilter, OrderingFilter
+
 
 logging = logging.getLogger(__name__)
 
 class ProductListCreateApiView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    filterset_fields = ['name', 'supplier__id']
+    search_fields = ['name', 'description']
+    ordering_fields = ['name', 'price', 'quantity', 'created_at']
+    ordering = ['name']
+    pagination_class = generics.pagination.PageNumberPagination
     def get_permissions(self):
         if self.request.method == 'POST':
             return [IsAuthenticated(), IsSuperuser()]
