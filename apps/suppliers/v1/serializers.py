@@ -12,7 +12,7 @@ class SupplierSerializer(serializers.ModelSerializer):
         phone_number = attrs.get("phone_number")
         try:
             parsed_number = phonenumbers.parse(phone_number, None)
-            if not phone_number.is_valid_number(parsed_number):
+            if not phonenumbers.is_valid_number(parsed_number):
                 raise serializers.ValidationError("Invalid phone number format.")
         except phonenumbers.NumberParseException:
             raise serializers.ValidationError("Invalid phone number format.")

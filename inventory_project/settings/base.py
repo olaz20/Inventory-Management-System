@@ -49,6 +49,9 @@ INSTALLED_APPS = [
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': [
@@ -128,7 +131,16 @@ CELERY_RESULT_SERIALIZER = "json"
 
 AUTH_USER_MODEL = 'accounts.User'
 
+from datetime import timedelta
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=4),  # Access token lifetime 4 hour)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),  # Refresh token lifetime (7 days)
+    "ROTATE_REFRESH_TOKENS": False,  # Set to True if you want to rotate refresh tokens on every access token refresh
+    "BLACKLIST_AFTER_ROTATION": True,  # Set to True if you want to blacklist refresh tokens after use
+    "ALGORITHM": "HS256",  # Algorithm used for signing tokens
+    "SIGNING_KEY": "your-secret-key",  # Secret key for signing the tokens
+}
 
 
 

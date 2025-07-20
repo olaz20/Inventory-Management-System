@@ -52,7 +52,7 @@ class ProductRetrieveUpdateDeleteApiView(generics.RetrieveUpdateDestroyAPIView):
         try:
            instance = self.get_object()
            serializer = self.get_serializer(instance)
-           logger.debug(f"Product retrieved: ID {instance.id} by {request.user.username}")
+           logging.debug(f"Product retrieved: ID {instance.id} by {request.user.username}")
            return api_response(message="Product retrived successfully", data=serializer.data, status_code=status.HTTP_200_OK)
         except Exception as e:
             logging.error(f"Error retrieving product: {e}")
@@ -64,7 +64,7 @@ class ProductRetrieveUpdateDeleteApiView(generics.RetrieveUpdateDestroyAPIView):
             serializer = self.get_serializer(instance, data=request.data, partial=partial)
             serializer.is_valid(raise_exception=True)
             self.perform_update(serializer)
-            logger.info(f"Product updated: ID {instance.id} by {request.user.username}")
+            logging.info(f"Product updated: ID {instance.id} by {request.user.username}")
             return api_response(message="Product updated successfully", data=serializer.data, status_code=status.HTTP_200_OK)
         except Exception as e:
             logging.error(f"Error updating product: {e}")
@@ -72,7 +72,7 @@ class ProductRetrieveUpdateDeleteApiView(generics.RetrieveUpdateDestroyAPIView):
     def destroy(self, request, *args, **kwargs):
         try:
             instance = self.get_object()
-            logger.info(f"Product deleted: ID {instance.id} by {request.user.username}")
+            logging.info(f"Product deleted: ID {instance.id} by {request.user.username}")
             self.perform_destroy(instance)
             return api_response(message="Product deleted successfully", status_code=status.HTTP_204_NO_CONTENT)
         except Exception as e:
@@ -149,7 +149,7 @@ class CSVUploadView(APIView):
                 logging.warning("CSV upload attempted with non-CSV file")
                 return api_response(message="Invalid file type", 
                         data={"file": "Only CSV files are allowed"}, status_code=status.HTTP_400_BAD_REQUEST)
-            required_columns = ['name', 'description', 'price', 'quantity', 'supplier_id']
+            required_columns = ['name', 'description', 'price', 'quantity', 'supplier_name']
             try:
                 df = pd.read_csv(file)
             except Exception as e:
@@ -162,7 +162,7 @@ class CSVUploadView(APIView):
                 logging.warning(f"Missing columns in CSV: {missing_cols}")
                 return api_response(
                     message="Invalid CSV format",
-                    errors={"file": f"Missing columns: {', '.join(missing_cols)}"},
+                    data={"file": f"Missing columns: {', '.join(missing_cols)}"},
                     status_code=status.HTTP_400_BAD_REQUEST
                 )
             results = {
