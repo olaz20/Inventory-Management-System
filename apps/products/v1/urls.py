@@ -7,3 +7,4 @@ urlpatterns = [
     path('inventory/', InventoryLevelListCreateApiView.as_view(), name='inventory-list-create'),
     path('upload-csv/', CSVUploadView.as_view(), name='csv-upload'),
 ]
+
