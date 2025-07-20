@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "apps.suppliers",
     "apps.products",
+    "apps.accounts",
     "core",
 ]
 
@@ -125,6 +126,7 @@ CELERY_RESULT_SERIALIZER = "json"
 
 
 
+AUTH_USER_MODEL = 'accounts.User'
 
 
 
