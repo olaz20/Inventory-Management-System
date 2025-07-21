@@ -1,0 +1,7 @@
+product_id,product_name,quantity,price,stock_value,supplier_name,low_stock_alert
+1,itel,8,500.0,4000.0,itel,Yes
+2,Galaxy Z Fold 6,75,1799.99,134999.25,Samsung,No
+3,Samsung Galaxy S23,75,799.99,59999.25,Samsung,No
+4,iPhone 15,100,1099.99,109999.0,Apple Inc.,No
+5,MacBook Air,50,1299.99,64999.5,Apple Inc.,No
+6,AirPods Pro 2,200,249.99,49998.0,Apple Inc.,No
