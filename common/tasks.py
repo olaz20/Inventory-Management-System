@@ -9,10 +9,11 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-@shared_task
-def generate_inventory_report(task_id):
+@shared_task(bind=True)
+def generate_inventory_report(self):
     try:
-        LOW_STOCK_THRESHOLD = 10
+        task_id = self.request.id
+        LOW_STOCK_THRESHOLD = 50
         products = Product.objects.select_related('supplier').prefetch_related('inventory').all()
 
         inventory_data = []
