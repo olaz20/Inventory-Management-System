@@ -9,8 +9,5 @@ python manage.py collectstatic --noinput
 # Apply migrations
 python manage.py migrate --noinput
 
-# Optionally create a superuser (only if needed)
-python manage.py createsuperuser --noinput || true
-
 python manage.py userauto
 

@@ -102,6 +102,11 @@ WSGI_APPLICATION = "inventory_project.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+DATABASES = {
+    'default': dj_database_url.config(
+        default=config("DATABASE_URL")  # Uses the Render database URL
+    )
+}
 
 
 # Password validation
@@ -166,3 +171,6 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
