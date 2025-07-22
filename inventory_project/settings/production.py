@@ -4,7 +4,7 @@ from decouple import config
 
 import os
 DEBUG = False
-ALLOWED_HOSTS = ['inventory-project.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['inventory-management-system-7t9o.onrender.com', 'localhost', '127.0.0.1']
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
