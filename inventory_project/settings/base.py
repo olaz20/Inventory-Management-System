@@ -21,7 +21,8 @@ from decouple import config
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-fow-pak2a+&umq8m04(xc$%zvin4&-p9-ygi%en_j_d7_7h=e9"
+SECRET_KEY = config("SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
