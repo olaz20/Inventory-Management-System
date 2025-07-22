@@ -2,7 +2,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
 from dotenv import load_dotenv
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventory_project.settings.development')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'inventory_project.settings.base')
 load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
 
 import django
